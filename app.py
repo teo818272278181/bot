@@ -57,8 +57,11 @@ async def run_bot():
 
 # Chạy cả bot và FastAPI server
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    import threading
 
-    loop.create_task(run_bot())  # Chạy bot Telegram trong nền
-    uvicorn.run(server, host="0.0.0.0", port=10000)  # Chạy FastAPI server
+    # Chạy bot Telegram trên một luồng riêng
+    bot_thread = threading.Thread(target=asyncio.run, args=(run_bot(),), daemon=True)
+    bot_thread.start()
+
+    # Chạy FastAPI server
+    uvicorn.run(server, host="0.0.0.0", port=10000)
